@@ -1,0 +1,18 @@
+context root {
+    /\s*<\?(.)\s*(.*?)\s*\?>\s*/ {
+        enter block;
+        take op;
+        take arg;
+        exit;
+    }
+
+    /.+?(?=<\?)/ {
+        grab literal;
+    }
+
+    /.+/ {
+        grab literal;
+    }
+}
+
+context block;
