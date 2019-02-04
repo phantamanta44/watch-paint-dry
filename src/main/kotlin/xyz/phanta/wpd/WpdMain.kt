@@ -49,11 +49,7 @@ fun main(rawArgs: Array<String>) {
                         } catch (e: InterruptedException) {
                             break
                         }
-                        try {
-                            renderer.render()
-                        } catch (e: Exception) {
-                            throw e
-                        }
+                        renderer.render()
                     }
                 }
             }

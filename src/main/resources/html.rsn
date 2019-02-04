@@ -1,4 +1,5 @@
 context root {
+
     /\s*<\?(.)\s*(.*?)\s*\?>\s*/ {
         enter block;
         take op;
@@ -13,6 +14,7 @@ context root {
     /.+/ {
         grab literal;
     }
+
 }
 
 context block;
