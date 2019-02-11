@@ -5,6 +5,7 @@ import org.jsoup.parser.Parser
 import xyz.phanta.wpd.WpdArgs
 import xyz.phanta.wpd.model.*
 import xyz.phanta.wpd.renderer.adapter.HtmlAdapter
+import xyz.phanta.wpd.renderer.adapter.JsonAdapter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -117,7 +118,7 @@ private class AssetDependencyTree(private val adapters: AssetAdapterResolver) : 
 private class DefaultAdapters : AssetAdapterResolver {
 
     private val adapters: List<AssetAdapter> = listOf(
-            HtmlAdapter()
+            HtmlAdapter(), JsonAdapter()
     )
 
     override fun adapterFor(key: String, path: Path): AssetAdapter {

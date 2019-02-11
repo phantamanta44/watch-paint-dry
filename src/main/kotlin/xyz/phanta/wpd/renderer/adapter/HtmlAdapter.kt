@@ -50,7 +50,7 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                 throw AssetParsingException(key, e)
             }
         }
-        return BaseAsset(key, contextStack.getContextAsRoot().bake())
+        return RenderableAsset(key, contextStack.getContextAsRoot().bake())
     }
 
     private val ParseTreeParentNode.operand: String
