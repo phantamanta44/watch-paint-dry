@@ -11,17 +11,17 @@ class RenderableLiteral(private val value: String) : Renderable {
 
 }
 
-class RenderableReference(private val identifier: String) : Renderable {
+class RenderableExpression(private val expression: String) : Renderable {
 
     override fun render(ctx: NameResolver, deps: AssetResolver): String =
-            ctx.ensureReference(ResolutionType.RENDERABLE, identifier).render(ctx, deps)
+            ctx.resolveExpression(ResolutionType.ANY, expression)?.render(ctx, deps) ?: ""
 
 }
 
-class RenderableSilentReference(private val identifier: String) : Renderable {
+class RenderableStrictExpression(private val expression: String) : Renderable {
 
     override fun render(ctx: NameResolver, deps: AssetResolver): String =
-            ctx.resolveReference(ResolutionType.RENDERABLE, identifier)?.render(ctx, deps) ?: ""
+            ctx.ensureExpression(ResolutionType.ANY, expression).render(ctx, deps)
 
 }
 

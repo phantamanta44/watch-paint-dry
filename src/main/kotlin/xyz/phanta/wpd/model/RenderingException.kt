@@ -10,16 +10,38 @@ open class RenderingException : Exception {
 
 }
 
-class UnrenderableAssetException(val key: String, val path: Path) : RenderingException("No adapter for asset: $key ($path)")
+class UnrenderableAssetException(key: String, val path: Path) : RenderingException("No adapter for asset: $key ($path)")
 
-class DuplicateAssetException(val key: String, val oldPath: Path, val newPath: Path)
+class DuplicateAssetException(key: String, oldPath: Path, newPath: Path)
     : RenderingException("Duplicate asset: $key ($oldPath -> $newPath)")
 
-class UnresolvableAssetException(val key: String) : RenderingException("Could not resolve asset: $key")
+class UnresolvableAssetException(key: String) : RenderingException("Could not resolve asset: $key")
 
-class UnresolvableReferenceException(val identifier: String) : RenderingException("Could not resolve reference: $identifier")
+class AssetParsingException : RenderingException {
 
-class ReferenceTypeException(val identifier: String, val expectedType: Class<*>, val actualType: Class<*>)
-    : RenderingException("Wanted ${expectedType.name} but referenced ${actualType.name}: $identifier")
+    val key: String
+    val line: Int
+    val pos: Int
+
+    constructor (key: String, line: Int, pos: Int, cause: Throwable) : super("Parsing failed at $line/$pos for asset: $key", cause) {
+        this.key = key
+        this.line = line
+        this.pos = pos
+    }
+
+    constructor(key: String, cause: Throwable) : super("Parsing failed for asset: $key", cause) {
+        this.key = key
+        this.line = -1
+        this.pos = -1
+    }
+
+}
+
+class UnresolvableReferenceException(identifier: String) : RenderingException("Could not resolve reference: $identifier")
+
+class ReferenceTypeException(identifier: String, expectedType: Class<*>, actualType: Class<*>)
+    : RenderingException("Expected ${expectedType.name} but found ${actualType.name}: $identifier")
+
+class MalformationException(msg: String) : RenderingException(msg)
 
 class RenderingStateException(msg: String) : RenderingException(msg)

@@ -1,0 +1,73 @@
+:expr = conditional_or_expr "?" expr ":" expr
+      = conditional_or_expr
+
+
+:conditional_or_expr = conditional_and_expr
+                     = conditional_or_expr "||" conditional_and_expr
+:conditional_and_expr = inclusive_or_expr
+                      = conditional_and_expr "&&" inclusive_or_expr
+
+:inclusive_or_expr = exclusive_or_expr
+                   = inclusive_or_expr "|" exclusive_or_expr
+:exclusive_or_expr = and_expr
+                   = exclusive_or_expr "^" and_expr
+:and_expr = equality_expr
+          = and_expr "&" equality_expr
+
+:equality_expr = relational_expr
+               = equality_expr "==" relational_expr
+               = equality_expr "!=" relational_expr
+:relational_expr = shift_expr
+                 = relational_expr "<" shift_expr
+                 = relational_expr ">" shift_expr
+                 = relational_expr "<=" shift_expr
+                 = relational_expr ">=" shift_expr
+
+:shift_expr = additive_expr
+            = shift_expr "<<" additive_expr
+            = shift_expr ">>" additive_expr
+            = shift_expr ">>>" additive_expr
+:additive_expr = multiplicative_expr
+               = additive_expr "+" multiplicative_expr
+               = additive_expr "-" multiplicative_expr
+:multiplicative_expr = exponentiation_expr
+                     = multiplicative_expr "*" unary_expr
+                     = multiplicative_expr "/" unary_expr
+                     = multiplicative_expr "%" unary_expr
+:exponentiation_expr = sign_expr
+                     = exponentiation_expr "**" sign_expr
+
+:sign_expr = "+" sign_expr
+           = "-" sign_expr
+           = unary_expr
+:unary_expr = primary
+            = expr_name
+            = "~" unary_expr
+            = "!" unary_expr
+
+:primary = literal
+         = "(" expr ")"
+         = primary "." identifier
+         = expr_name array_index
+         = primary array_index
+
+:literal = floating_point_literal
+         = integer_literal
+         = boolean_literal
+         = "\"" + string_literal + "\""
+:floating_point_literal = /\d+/ "." /\d+/
+                        = /\d+/ "."
+:integer_literal = /\d+/
+:boolean_literal = "true"
+                 = "false"
+:string_literal = string_seg + string_literal
+                = string_seg
+:string_seg = string_escape
+            = /[^\\"]+/
+:string_escape = /\\./
+
+:expr_name = identifier
+           = expr_name "." identifier
+
+:identifier = /[A-Za-z_][\w_]*/
+:array_index = "[" expr "]"

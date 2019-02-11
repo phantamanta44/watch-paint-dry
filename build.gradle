@@ -13,8 +13,9 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation group: 'com.xenomachina', name: 'kotlin-argparser', version: '2.0.7'
-    implementation 'com.github.regularsyntax:ReSyN:1.1.2'
+    implementation 'com.github.phantamanta44:wird:1.0.2'
     implementation group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 compileKotlin {
@@ -38,3 +39,5 @@ task jarWithDeps(type: Jar) {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
+
+build.dependsOn jarWithDeps

@@ -1,0 +1,6 @@
+:html = html html_entity
+      = html_entity
+
+:html_entity = + "<?" /./ /.*?(?=\?>)/ "?>"
+             = + /(.|\n)+?(?=<\?)/
+             = + /.+/
