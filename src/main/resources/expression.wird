@@ -50,6 +50,8 @@
          = primary "." identifier
          = expr_name array_index
          = primary array_index
+         = expr_name map_index
+         = primary map_index
 
 :literal = floating_point_literal
          = integer_literal
@@ -71,3 +73,4 @@
 
 :identifier = /[A-Za-z_][\w_]*/
 :array_index = "[" expr "]"
+:map_index = "{" expr "}"

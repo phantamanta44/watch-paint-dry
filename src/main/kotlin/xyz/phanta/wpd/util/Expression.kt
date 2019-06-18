@@ -44,6 +44,8 @@ private val PARSER: Parser = GRAMMAR.newParser("expr", ParserConfig.Builder()
         .withFinalizers("primary", 2, Finalizers.omit(1))
         .withFinalizers("primary", 3, Finalizers.flatten(1))
         .withFinalizers("primary", 4, Finalizers.flatten(1))
+        .withFinalizers("primary", 5, Finalizers.flatten(1))
+        .withFinalizers("primary", 6, Finalizers.flatten(1))
 
         .withFinalizers("literal", 3, Finalizers.omit(0, 2))
         .withFinalizers("floating_point_literal", Finalizers.join())
@@ -56,6 +58,7 @@ private val PARSER: Parser = GRAMMAR.newParser("expr", ParserConfig.Builder()
         .withFinalizers("expr_name", 0, Finalizers.flatten(0))
         .withFinalizers("expr_name", 1, Finalizers.omit(1), Finalizers.flatten(1))
         .withFinalizers("array_index", Finalizers.omit(0, 2))
+        .withFinalizers("map_index", Finalizers.omit(0, 2))
         .build())
 
 private fun ParserConfig.Builder.binaryOp(identifier: String, count: Int = 1): ParserConfig.Builder {
@@ -247,6 +250,7 @@ private fun <T : Resolved> NameResolver.marshal(type: ResolutionType<T>, node: P
         1 -> marshal(type, node.getSubtree(0))
         2 -> marshal(RESOLVER, node.getSubtree(0)).ensureReference(type, node.getSubtree(1).getLeaf(0).content)
         3, 4 -> marshal(INDEXABLE, node.getSubtree(0)).ensureIndex(type, intAt(node, 1))
+        5, 6 -> marshal(RESOLVER, node.getSubtree(0)).ensureReference(type, strAt(node, 1))
         else -> throw IllegalStateException("Bad primary expr: ${node.bodyIndex}")
     } as T
 
@@ -262,6 +266,7 @@ private fun <T : Resolved> NameResolver.marshal(type: ResolutionType<T>, node: P
 private fun NameResolver.intAt(node: ParseTreeParentNode, index: Int): Int = marshal(INTEGRAL, node.getSubtree(index)).integerValue
 private fun NameResolver.fpAt(node: ParseTreeParentNode, index: Int): Double = marshal(F_POINT, node.getSubtree(index)).floatValue
 private fun NameResolver.boolAt(node: ParseTreeParentNode, index: Int): Boolean = marshal(BOOLEAN, node.getSubtree(index)).booleanValue
+private fun NameResolver.strAt(node: ParseTreeParentNode, index: Int): String = marshal(STRING, node.getSubtree(index)).stringValue
 
 class ExpressionException(msg: String) : RenderingException(msg)
 
