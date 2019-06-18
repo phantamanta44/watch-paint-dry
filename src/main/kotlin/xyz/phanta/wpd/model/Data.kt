@@ -220,7 +220,7 @@ interface StringData : Indexable, Resolved {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Resolved> resolveIndex(type: ResolutionType<T>, index: Int): T? =
-            if (type conformsTo ResolutionType.STRING) {
+            if (ResolutionType.STRING conformsTo type) {
                 Of(stringValue[index].toString()) as T
             } else {
                 throwTypeMismatch(type, ResolutionType.STRING)

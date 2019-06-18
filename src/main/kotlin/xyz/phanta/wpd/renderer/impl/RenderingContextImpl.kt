@@ -45,7 +45,8 @@ class ConditionalContextModel(private val condition: String) : AbstractRendering
 
     override fun bake(ctx: NameResolver, deps: AssetResolver): RenderingContext {
         val resolver = buildResolver(ctx, deps)
-        return if (ctx.resolveExpression(ResolutionType.BOOLEAN, condition)?.booleanValue == true) {
+        return if (ctx.resolveExpression(ResolutionType.ANY, condition) != null
+                && ctx.resolveExpression(ResolutionType.BOOLEAN, condition)?.booleanValue != false) {
             RenderableContext(resolver, children.map { it.bake(resolver, deps) })
         } else {
             fallthrough?.bake(ctx, deps) ?: RenderableContext(resolver, emptyList())

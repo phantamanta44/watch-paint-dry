@@ -62,6 +62,10 @@ private constructor(private val typeName: String, private val type: Class<T>, pr
 
     companion object {
 
+        private val TYPES: MutableMap<String, ResolutionType<*>> = mutableMapOf()
+
+        fun resolve(name: String): ResolutionType<*>? = TYPES[name]
+
         val ANY: ResolutionType<*> = ResolutionType("Any", Resolved::class.java, null)
         val RESOLVER: ResolutionType<NameResolver> = ResolutionType("Map", NameResolver::class.java)
         val INDEXABLE: ResolutionType<Indexable> = ResolutionType("List", Indexable::class.java, RESOLVER)
@@ -71,6 +75,11 @@ private constructor(private val typeName: String, private val type: Class<T>, pr
         val BOOLEAN: ResolutionType<BooleanData> = ResolutionType("Boolean", BooleanData::class.java)
         val STRING: ResolutionType<StringData> = ResolutionType("String", StringData::class.java, INDEXABLE)
 
+    }
+
+    init {
+        @Suppress("LeakingThis")
+        TYPES[typeName] = this
     }
 
     open infix fun conformsTo(other: ResolutionType<*>): Boolean {

@@ -65,7 +65,7 @@ class JsonAdapter : AbstractFileTypeAdapter("application/json", ".json") {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T =
-                wrap(type, dto.get(identifier)) as T
+                wrap(type, dto.get(identifier) ?: throw UnresolvableAssetException(identifier)) as T
 
         override fun keySet(): List<String> = dto.keySet().toList()
 

@@ -21,6 +21,7 @@
                  = relational_expr ">" shift_expr
                  = relational_expr "<=" shift_expr
                  = relational_expr ">=" shift_expr
+                 = relational_expr "instanceof" identifier
 
 :shift_expr = additive_expr
             = shift_expr "<<" additive_expr

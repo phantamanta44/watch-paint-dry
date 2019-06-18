@@ -27,7 +27,7 @@ private val PARSER: Parser = GRAMMAR.newParser("expr", ParserConfig.Builder()
         .binaryOp("exclusive_or_expr")
         .binaryOp("and_expr")
         .binaryOp("equality_expr", 2)
-        .binaryOp("relational_expr", 6)
+        .binaryOp("relational_expr", 5)
         .binaryOp("shift_expr", 3)
         .binaryOp("additive_expr", 2)
         .binaryOp("multiplicative_expr", 3)
@@ -122,6 +122,16 @@ private fun <T : Resolved> NameResolver.marshal(type: ResolutionType<T>, node: P
             2 -> marshal(NUMERAL, node.getSubtree(0)) gt marshal(NUMERAL, node.getSubtree(1))
             3 -> marshal(NUMERAL, node.getSubtree(0)) lte marshal(NUMERAL, node.getSubtree(1))
             4 -> marshal(NUMERAL, node.getSubtree(0)) gte marshal(NUMERAL, node.getSubtree(1))
+            5 -> node.getLeaf(1).content.let {
+                (ResolutionType.resolve(it) ?: throw RenderingStateException("Unknown type: $it")).let { testType ->
+                    try {
+                        marshal(testType, node.getSubtree(0))
+                        BooleanData.TRUE
+                    } catch (e: Exception) {
+                        BooleanData.FALSE
+                    }
+                }
+            }
             else -> throw IllegalStateException("Bad relational expr: ${node.bodyIndex}")
         } as T
     } else {
