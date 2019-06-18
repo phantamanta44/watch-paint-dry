@@ -17,6 +17,8 @@ interface NameResolver : Resolved {
 
     fun <T : Resolved> ensureExpression(type: ResolutionType<T>, expression: String): T = parseExpression(type, expression)
 
+    fun keySet(): List<String>
+
     override fun isEq(other: Resolved): Boolean = this == other
 
 }
@@ -25,13 +27,23 @@ object NilNameResolver : NameResolver {
 
     override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? = null
 
+    override fun keySet(): List<String> = emptyList()
+
 }
 
-interface RenderingContext : Resolved {
+interface RenderingContext : Resolved, NameResolver {
 
     val nameResolver: NameResolver
 
     override fun isEq(other: Resolved): Boolean = this == other
+
+    override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? =
+            nameResolver.resolveReference(type, identifier)
+
+    override fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T =
+            nameResolver.ensureReference(type, identifier)
+
+    override fun keySet(): List<String> = nameResolver.keySet()
 
 }
 

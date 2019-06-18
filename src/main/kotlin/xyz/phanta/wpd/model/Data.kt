@@ -5,6 +5,12 @@ import xyz.phanta.wpd.util.throwTypeMismatch
 
 interface Indexable : NameResolver, Resolved {
 
+    companion object {
+
+        private val KEY_SET: List<String> = listOf("length")
+
+    }
+
     fun <T : Resolved> resolveIndex(type: ResolutionType<T>, index: Int): T?
 
     fun <T : Resolved> ensureIndex(type: ResolutionType<T>, index: Int): T = resolveIndex(type, index)
@@ -23,6 +29,8 @@ interface Indexable : NameResolver, Resolved {
             } else {
                 null
             }
+
+    override fun keySet(): List<String> = KEY_SET
 
     override fun isEq(other: Resolved): Boolean = this == other
 

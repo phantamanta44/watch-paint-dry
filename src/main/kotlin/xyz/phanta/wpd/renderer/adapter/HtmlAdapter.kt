@@ -38,18 +38,35 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                                 contextStack.bindings[token.operand] = it
                                 contextStack = contextStack.push(it)
                             }
-                            "$" -> {
+                            "[" -> {
                                 val operands = token.operand.split("<-", limit = 2)
                                 if (operands.size != 2) {
-                                    throw MalformationException("Malformed for-each expression!")
+                                    throw MalformationException("Malformed indexable for-each expression!")
                                 }
                                 val iterModel = IterationContextModel(operands[0].trim(), operands[1].trim())
                                 contextStack.children.add(iterModel)
                                 contextStack = contextStack.push(iterModel)
                             }
+                            "{" -> {
+                                val operands = token.operand.split("<-", limit = 2)
+                                if (operands.size != 2) {
+                                    throw MalformationException("Malformed resolver data-import expression!")
+                                }
+                                val iterVars = operands[0].split(",", limit = 2)
+                                if (iterVars.size != 2) {
+                                    throw MalformationException("Malformed resolver data-import expression!")
+                                }
+                                val iterModel = ResolverIterationContextModel(
+                                        iterVars[0].trim(),
+                                        iterVars[1].trim(),
+                                        operands[1].trim()
+                                )
+                                contextStack.children.add(iterModel)
+                                contextStack = contextStack.push(iterModel)
+                            }
                             "/" -> contextStack = contextStack.pop()
                             "+" -> contextStack.children.add(ImportModel(token.operand))
-                            "{" -> {
+                            "d" -> {
                                 val operands = token.operand.split("=", limit = 2)
                                 if (operands.size != 2) {
                                     throw MalformationException("Malformed data-import expression!")

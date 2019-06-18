@@ -53,8 +53,8 @@ private val PARSER: Parser = GRAMMAR.newParser("expr", ParserConfig.Builder()
         .withFinalizers("string_seg", Finalizers.unescape())
         .withFinalizers("string_seg", 0, Finalizers.flatten(0))
 
+        .withFinalizers("expr_name", 0, Finalizers.flatten(0))
         .withFinalizers("expr_name", 1, Finalizers.omit(1), Finalizers.flatten(1))
-        .withFinalizers("expr_name", Finalizers.flatten(0))
         .withFinalizers("array_index", Finalizers.omit(0, 2))
         .build())
 

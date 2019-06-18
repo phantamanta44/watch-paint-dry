@@ -67,6 +67,8 @@ class JsonAdapter : AbstractFileTypeAdapter("application/json", ".json") {
         override fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T =
                 wrap(type, dto.get(identifier)) as T
 
+        override fun keySet(): List<String> = dto.keySet().toList()
+
         override fun stringify(): String = GSON.toJson(dto)
 
     }
