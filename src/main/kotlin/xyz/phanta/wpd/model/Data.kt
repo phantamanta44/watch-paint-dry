@@ -18,7 +18,7 @@ interface Indexable : NameResolver, Resolved {
                 if (type conformsTo ResolutionType.INTEGRAL) {
                     IntegralData.Of(length) as T
                 } else {
-                    throwTypeMismatch(type, ResolutionType.STRING)
+                    throwTypeMismatch(type, ResolutionType.INTEGRAL)
                 }
             } else {
                 null

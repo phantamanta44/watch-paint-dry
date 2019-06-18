@@ -40,12 +40,12 @@ class Renderer(private val args: WpdArgs, pathIn: Path, private val pathOut: Pat
         }
 
         println("\n> Rendering pages...")
-        val rendered = deps.resolvePages().map {
-            it.first to it.second.render(it.second, deps)
+        val baked = deps.resolvePages().map {
+            it.first to it.second.bake(NilNameResolver, deps).render()
         }
 
         println("\n> Writing rendered pages...")
-        rendered.forEach {
+        baked.forEach {
             val path = pathOut.resolve(dirPages.relativize(it.first))
             println("Writing '$path'")
             Files.createDirectories(path.parent)
@@ -77,6 +77,7 @@ private class AssetDependencyTree(private val adapters: AssetAdapterResolver) : 
     private val keyMapping: MutableMap<String, Path> = mutableMapOf()
     private val pageMapping: MutableMap<String, Path> = mutableMapOf()
     private val cache: MutableMap<String, Asset> = mutableMapOf()
+    // TODO detect circular dependencies
 
     fun registerTemplate(key: String, file: Path) {
         keyMapping[key]?.let { throw DuplicateAssetException(key, it, file) }

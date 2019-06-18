@@ -32,14 +32,23 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                     0 -> {
                         val op = token.getLeaf(0).content
                         when (op) {
-                            "=" -> contextStack.children.add(RenderableStrictExpression(token.operand))
-                            "~" -> contextStack.children.add(RenderableExpression(token.operand))
+                            "=" -> contextStack.children.add(StrictExpressionModel(token.operand))
+                            "~" -> contextStack.children.add(ExpressionModel(token.operand))
                             ":" -> RenderableContextModel().let {
                                 contextStack.bindings[token.operand] = it
                                 contextStack = contextStack.push(it)
                             }
+                            "$" -> {
+                                val operands = token.operand.split("<-", limit = 2)
+                                if (operands.size != 2) {
+                                    throw MalformationException("Malformed for-each expression!")
+                                }
+                                val iterModel = IterationContextModel(operands[0].trim(), operands[1].trim())
+                                contextStack.children.add(iterModel)
+                                contextStack = contextStack.push(iterModel)
+                            }
                             "/" -> contextStack = contextStack.pop()
-                            "+" -> contextStack.children.add(RenderableImport(token.operand))
+                            "+" -> contextStack.children.add(ImportModel(token.operand))
                             else -> throw RenderingStateException("Invalid operator '$op'")
                         }
                     }
@@ -50,7 +59,7 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                 throw AssetParsingException(key, e)
             }
         }
-        return RenderableAsset(key, contextStack.getContextAsRoot().bake())
+        return RenderableAsset(key, contextStack.getContextAsRoot())
     }
 
     private val ParseTreeParentNode.operand: String

@@ -23,7 +23,7 @@ class AssetParsingException : RenderingException {
     val line: Int
     val pos: Int
 
-    constructor (key: String, line: Int, pos: Int, cause: Throwable) : super("Parsing failed at $line/$pos for asset: $key", cause) {
+    constructor(key: String, line: Int, pos: Int, cause: Throwable) : super("Parsing failed at $line/$pos for asset: $key", cause) {
         this.key = key
         this.line = line
         this.pos = pos

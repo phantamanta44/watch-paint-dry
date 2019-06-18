@@ -21,7 +21,15 @@ interface NameResolver : Resolved {
 
 }
 
-interface RenderingContext : NameResolver, Renderable {
+object NilNameResolver : NameResolver {
+
+    override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? = null
+
+}
+
+interface RenderingContext : Resolved {
+
+    val nameResolver: NameResolver
 
     override fun isEq(other: Resolved): Boolean = this == other
 
@@ -33,7 +41,7 @@ interface Resolved : Renderable {
 
     fun stringify(): String = toString()
 
-    override fun render(ctx: NameResolver, deps: AssetResolver): String = stringify()
+    override fun render(): String = stringify()
 
 }
 

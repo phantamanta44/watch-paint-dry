@@ -2,11 +2,11 @@ package xyz.phanta.wpd.model
 
 interface RenderingModel<out T> {
 
-    fun bake(): T
+    fun bake(ctx: NameResolver, deps: AssetResolver): T
 
 }
 
-interface RenderingContextModel<T : RenderingContext> : RenderingModel<T> {
+interface RenderingContextModel : RenderingModel<RenderingContext> {
 
     val bindings: MutableMap<String, RenderingModel<Any>>
 

@@ -2,8 +2,8 @@ package xyz.phanta.wpd.model
 
 interface Renderable : RenderingModel<Renderable> {
 
-    fun render(ctx: NameResolver, deps: AssetResolver): String
+    fun render(): String
 
-    override fun bake(): Renderable = this
+    override fun bake(ctx: NameResolver, deps: AssetResolver): Renderable = this
 
 }

@@ -2,7 +2,7 @@ package xyz.phanta.wpd.model
 
 import java.nio.file.Path
 
-interface Asset : RenderingContext {
+interface Asset : RenderingModel<RenderingContext> {
 
     val assetKey: String
 

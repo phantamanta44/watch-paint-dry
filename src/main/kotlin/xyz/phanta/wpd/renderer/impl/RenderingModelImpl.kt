@@ -1,14 +1,37 @@
 package xyz.phanta.wpd.renderer.impl
 
-import xyz.phanta.wpd.model.Renderable
-import xyz.phanta.wpd.model.RenderingContextModel
-import xyz.phanta.wpd.model.RenderingModel
+import xyz.phanta.wpd.model.*
 
-class RenderableContextModel : RenderingContextModel<RenderableContext> {
+object RenderableNil : Renderable {
 
-    override val bindings: MutableMap<String, RenderingModel<Any>> = mutableMapOf()
-    override val children: MutableList<RenderingModel<Renderable>> = mutableListOf()
+    override fun render(): String = ""
 
-    override fun bake(): RenderableContext = RenderableContext(bindings.mapValues { it.value.bake() }, children.map { it.bake() })
+}
+
+class RenderableLiteral(private val value: String) : Renderable {
+
+    override fun render(): String = value
+
+}
+
+internal fun bakeString(value: String?): Renderable = value?.let { RenderableLiteral(it) } ?: RenderableNil
+
+class ExpressionModel(private val expression: String) : RenderingModel<Renderable> {
+
+    override fun bake(ctx: NameResolver, deps: AssetResolver): Renderable =
+            ctx.resolveExpression(ResolutionType.ANY, expression)?.bake(ctx, deps) ?: RenderableNil
+
+}
+
+class StrictExpressionModel(private val expression: String) : RenderingModel<Renderable> {
+
+    override fun bake(ctx: NameResolver, deps: AssetResolver): Renderable =
+            ctx.ensureExpression(ResolutionType.ANY, expression).bake(ctx, deps)
+
+}
+
+class ImportModel(private val key: String) : RenderingModel<Renderable> {
+
+    override fun bake(ctx: NameResolver, deps: AssetResolver): Renderable = deps.resolveAsset(key).bake(ctx, deps)
 
 }
