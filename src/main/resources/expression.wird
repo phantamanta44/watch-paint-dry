@@ -1,7 +1,6 @@
 :expr = conditional_or_expr "?" expr ":" expr
       = conditional_or_expr
 
-
 :conditional_or_expr = conditional_and_expr
                      = conditional_or_expr "||" conditional_and_expr
 :conditional_and_expr = inclusive_or_expr
