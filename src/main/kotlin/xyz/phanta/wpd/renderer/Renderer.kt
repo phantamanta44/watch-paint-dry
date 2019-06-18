@@ -9,6 +9,8 @@ import xyz.phanta.wpd.renderer.adapter.JsonAdapter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.util.*
+import kotlin.Comparator
 
 class Renderer(private val args: WpdArgs, pathIn: Path, private val pathOut: Path) {
 
@@ -77,7 +79,7 @@ private class AssetDependencyTree(private val adapters: AssetAdapterResolver) : 
     private val keyMapping: MutableMap<String, Path> = mutableMapOf()
     private val pageMapping: MutableMap<String, Path> = mutableMapOf()
     private val cache: MutableMap<String, Asset> = mutableMapOf()
-    // TODO detect circular dependencies
+    private val resolutionStack: Deque<String> = LinkedList()
 
     fun registerTemplate(key: String, file: Path) {
         keyMapping[key]?.let { throw DuplicateAssetException(key, it, file) }
@@ -107,9 +109,14 @@ private class AssetDependencyTree(private val adapters: AssetAdapterResolver) : 
     private fun parse(key: String): Asset = parsePath(key, keyMapping[key] ?: throw UnresolvableAssetException(key))
 
     private fun parsePath(key: String, path: Path): Asset {
+        if (resolutionStack.contains(key)) {
+            throw RenderingStateException("Circular dependency: $key (${resolutionStack.joinToString(" -> ")})")
+        }
+        resolutionStack.push(key)
         val adapter = adapters.adapterFor(key, path)
-        println("Rendering '$key'")
+        println("Parsing '$key'")
         val page = adapter.parse(key, Files.readAllBytes(path), this)
+        resolutionStack.pop()
         cache[key] = page
         return page
     }
