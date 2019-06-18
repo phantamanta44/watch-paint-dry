@@ -49,6 +49,15 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                             }
                             "/" -> contextStack = contextStack.pop()
                             "+" -> contextStack.children.add(ImportModel(token.operand))
+                            "{" -> {
+                                val operands = token.operand.split("=", limit = 2)
+                                if (operands.size != 2) {
+                                    throw MalformationException("Malformed data-import expression!")
+                                }
+                                val importModel = ImportContextModel(operands[0].trim(), operands[1].trim())
+                                contextStack.children.add(importModel)
+                                contextStack = contextStack.push(importModel)
+                            }
                             else -> throw RenderingStateException("Invalid operator '$op'")
                         }
                     }

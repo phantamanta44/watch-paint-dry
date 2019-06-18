@@ -14,8 +14,6 @@ class RenderableLiteral(private val value: String) : Renderable {
 
 }
 
-internal fun bakeString(value: String?): Renderable = value?.let { RenderableLiteral(it) } ?: RenderableNil
-
 class ExpressionModel(private val expression: String) : RenderingModel<Renderable> {
 
     override fun bake(ctx: NameResolver, deps: AssetResolver): Renderable =
