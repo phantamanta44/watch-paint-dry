@@ -17,5 +17,5 @@ class DataAsset(override val assetKey: String, private val resolver: NameResolve
 
     override fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T =
             resolver.ensureReference(type, identifier)
-    
+
 }
