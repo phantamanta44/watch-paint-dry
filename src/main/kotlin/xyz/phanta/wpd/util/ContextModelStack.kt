@@ -5,7 +5,7 @@ import xyz.phanta.wpd.model.RenderingContextModel
 import xyz.phanta.wpd.model.RenderingModel
 import xyz.phanta.wpd.model.RenderingStateException
 
-class ContextStackNode private constructor(private val context: RenderingContextModel, private val parent: ContextStackNode?) {
+class ContextStackNode private constructor(val context: RenderingContextModel, private val parent: ContextStackNode?) {
 
     constructor(root: RenderingContextModel) : this(root, null)
 
@@ -15,15 +15,11 @@ class ContextStackNode private constructor(private val context: RenderingContext
     val children: MutableList<RenderingModel<Renderable>>
         get() = context.children
 
+    val hasParent: Boolean
+        get() = parent != null
+
     fun push(context: RenderingContextModel): ContextStackNode = ContextStackNode(context, this)
 
     fun pop(): ContextStackNode = parent ?: throw RenderingStateException("Tried to exit root context!")
-
-    @Suppress("UNCHECKED_CAST")
-    fun getContextAsRoot(): RenderingContextModel = if (parent == null) {
-        context
-    } else {
-        throw RenderingStateException("Not at root context!")
-    }
 
 }

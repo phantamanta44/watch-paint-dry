@@ -28,6 +28,32 @@ class RenderableContextModel : AbstractRenderingContextModel() {
 
 }
 
+class ExpressionBindingContextModel(private val varName: String, private val valueExpr: String) : AbstractRenderingContextModel() {
+
+    override fun bake(ctx: NameResolver, deps: AssetResolver): RenderingContext {
+        val resolver = buildResolver(ctx, deps).let {
+            SingletonResolver(varName, it.ensureExpression(ResolutionType.ANY, valueExpr), it)
+        }
+        return RenderableContext(resolver, children.map { it.bake(resolver, deps) })
+    }
+
+}
+
+class ConditionalContextModel(private val condition: String) : AbstractRenderingContextModel() {
+
+    var fallthrough: RenderingContextModel? = null
+
+    override fun bake(ctx: NameResolver, deps: AssetResolver): RenderingContext {
+        val resolver = buildResolver(ctx, deps)
+        return if (ctx.resolveExpression(ResolutionType.BOOLEAN, condition)?.booleanValue == true) {
+            RenderableContext(resolver, children.map { it.bake(resolver, deps) })
+        } else {
+            fallthrough?.bake(ctx, deps) ?: RenderableContext(resolver, emptyList())
+        }
+    }
+
+}
+
 class IterationContextModel(private val iterVar: String, private val iterableVar: String) : AbstractRenderingContextModel() {
 
     override fun bake(ctx: NameResolver, deps: AssetResolver): RenderableContext {

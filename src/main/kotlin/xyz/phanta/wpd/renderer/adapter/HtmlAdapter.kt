@@ -38,6 +38,31 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                                 contextStack.bindings[token.operand] = it
                                 contextStack = contextStack.push(it)
                             }
+                            "." -> {
+                                val operands = token.operand.split("=", limit = 2)
+                                if (operands.size != 2) {
+                                    throw MalformationException("Malformed let-in expression!")
+                                }
+                                val letModel = ExpressionBindingContextModel(operands[0].trim(), operands[1].trim())
+                                contextStack.children.add(letModel)
+                                contextStack = contextStack.push(letModel)
+                            }
+                            "|" -> ConditionalContextModel(token.operand).let {
+                                contextStack.children.add(it)
+                                contextStack = contextStack.push(it)
+                            }
+                            "," -> {
+                                val condition = token.operand
+                                val newContext = if (condition.isEmpty()) {
+                                    RenderableContextModel()
+                                } else {
+                                    ConditionalContextModel(condition)
+                                }
+                                (contextStack.context as? ConditionalContextModel
+                                        ?: throw MalformationException("Conditional fallthrough block without conditional!"))
+                                        .fallthrough = newContext
+                                contextStack = contextStack.pop().push(newContext)
+                            }
                             "[" -> {
                                 val operands = token.operand.split("<-", limit = 2)
                                 if (operands.size != 2) {
@@ -85,7 +110,10 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                 throw AssetParsingException(key, e)
             }
         }
-        return RenderableAsset(key, contextStack.getContextAsRoot())
+        if (contextStack.hasParent) {
+            throw RenderingStateException("Not at root context!")
+        }
+        return RenderableAsset(key, contextStack.context)
     }
 
     private val ParseTreeParentNode.operand: String
