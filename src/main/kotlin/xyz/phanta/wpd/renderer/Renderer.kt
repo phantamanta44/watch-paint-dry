@@ -6,6 +6,7 @@ import xyz.phanta.wpd.WpdArgs
 import xyz.phanta.wpd.model.*
 import xyz.phanta.wpd.renderer.adapter.HtmlAdapter
 import xyz.phanta.wpd.renderer.adapter.JsonAdapter
+import xyz.phanta.wpd.renderer.adapter.YamlAdapter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -126,7 +127,7 @@ private class AssetDependencyTree(private val adapters: AssetAdapterResolver) : 
 private class DefaultAdapters : AssetAdapterResolver {
 
     private val adapters: List<AssetAdapter> = listOf(
-            HtmlAdapter(), JsonAdapter()
+            HtmlAdapter(), JsonAdapter(), YamlAdapter()
     )
 
     override fun adapterFor(key: String, path: Path): AssetAdapter {
