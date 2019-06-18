@@ -43,6 +43,8 @@ class YamlAdapter : AbstractFileTypeAdapter("application/x-yaml", ".yaml", ".yml
             else -> wrapScalar(type, map.string(identifier))
         } as T
 
+        override fun stringify(): String = map.toString()
+
     }
 
     private class SequenceWrapper(private val seq: YamlSequence) : Indexable {
@@ -62,6 +64,8 @@ class YamlAdapter : AbstractFileTypeAdapter("application/x-yaml", ".yaml", ".yml
 
         override val length: Int
             get() = seq.size()
+
+        override fun stringify(): String = seq.toString()
 
     }
 

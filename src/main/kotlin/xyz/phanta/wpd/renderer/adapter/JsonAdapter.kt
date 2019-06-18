@@ -1,9 +1,6 @@
 package xyz.phanta.wpd.renderer.adapter
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import com.google.gson.*
 import xyz.phanta.wpd.model.*
 import xyz.phanta.wpd.renderer.impl.DataAsset
 import xyz.phanta.wpd.util.throwTypeMismatch
@@ -14,6 +11,7 @@ class JsonAdapter : AbstractFileTypeAdapter("application/json", ".json") {
     companion object {
 
         private val PARSER: JsonParser = JsonParser()
+        private val GSON: Gson = GsonBuilder().setPrettyPrinting().create()
 
         private fun <T : Resolved> wrap(type: ResolutionType<T>, dto: JsonElement): Resolved = when {
             dto.isJsonObject -> if (ResolutionType.RESOLVER conformsTo type) {
@@ -69,6 +67,8 @@ class JsonAdapter : AbstractFileTypeAdapter("application/json", ".json") {
         override fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T =
                 wrap(type, dto.get(identifier)) as T
 
+        override fun stringify(): String = GSON.toJson(dto)
+
     }
 
     private class ListWrapper(private val dto: JsonArray) : Indexable {
@@ -85,6 +85,8 @@ class JsonAdapter : AbstractFileTypeAdapter("application/json", ".json") {
 
         override val length: Int
             get() = dto.size()
+
+        override fun stringify(): String = GSON.toJson(dto)
 
     }
 

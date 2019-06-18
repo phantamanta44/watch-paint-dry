@@ -14,7 +14,7 @@ class DataAsset(override val assetKey: String, private val resolver: NameResolve
 
     private class AssetRenderingContext(override val nameResolver: NameResolver) : RenderingContext {
 
-        override fun render(): String = nameResolver.stringify() // TODO properly stringify data
+        override fun render(): String = nameResolver.stringify()
 
     }
 
