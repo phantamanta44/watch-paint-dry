@@ -3,7 +3,8 @@ package xyz.phanta.wpd.renderer.impl
 import xyz.phanta.wpd.model.*
 import xyz.phanta.wpd.util.throwTypeMismatch
 
-class RenderableContext(override val nameResolver: NameResolver, private val children: List<Renderable>) : RenderingContext {
+class RenderableContext(override val nameResolver: NameResolver, private val children: List<Renderable>) :
+    RenderingContext {
 
     override fun render(): String = children.joinToString(separator = "") { it.render() }
 
@@ -15,7 +16,7 @@ abstract class AbstractRenderingContextModel : RenderingContextModel {
     override val children: MutableList<RenderingModel<Renderable>> = mutableListOf()
 
     internal fun buildResolver(ctx: NameResolver, deps: AssetResolver): NameResolver =
-            AppendingNameResolver(bindings.mapValues { it.value.bake(ctx, deps) }, ctx)
+        AppendingNameResolver(bindings.mapValues { it.value.bake(ctx, deps) }, ctx)
 
 }
 
@@ -28,7 +29,8 @@ class RenderableContextModel : AbstractRenderingContextModel() {
 
 }
 
-class ExpressionBindingContextModel(private val varName: String, private val valueExpr: String) : AbstractRenderingContextModel() {
+class ExpressionBindingContextModel(private val varName: String, private val valueExpr: String) :
+    AbstractRenderingContextModel() {
 
     override fun bake(ctx: NameResolver, deps: AssetResolver): RenderingContext {
         val resolver = buildResolver(ctx, deps).let {
@@ -46,7 +48,8 @@ class ConditionalContextModel(private val condition: String) : AbstractRendering
     override fun bake(ctx: NameResolver, deps: AssetResolver): RenderingContext {
         val resolver = buildResolver(ctx, deps)
         return if (ctx.resolveExpression(ResolutionType.ANY, condition) != null
-                && ctx.resolveExpression(ResolutionType.BOOLEAN, condition)?.booleanValue != false) {
+            && ctx.resolveExpression(ResolutionType.BOOLEAN, condition)?.booleanValue != false
+        ) {
             RenderableContext(resolver, children.map { it.bake(resolver, deps) })
         } else {
             fallthrough?.bake(ctx, deps) ?: RenderableContext(resolver, emptyList())
@@ -55,7 +58,8 @@ class ConditionalContextModel(private val condition: String) : AbstractRendering
 
 }
 
-class IterationContextModel(private val iterVar: String, private val iterableVar: String) : AbstractRenderingContextModel() {
+class IterationContextModel(private val iterVar: String, private val iterableVar: String) :
+    AbstractRenderingContextModel() {
 
     override fun bake(ctx: NameResolver, deps: AssetResolver): RenderableContext {
         val iterable = ctx.ensureExpression(ResolutionType.INDEXABLE, iterableVar)
@@ -69,8 +73,11 @@ class IterationContextModel(private val iterVar: String, private val iterableVar
 
 }
 
-class ResolverIterationContextModel(private val keyVar: String, private val valueVar: String, private val mapVar: String)
-    : AbstractRenderingContextModel() {
+class ResolverIterationContextModel(
+    private val keyVar: String,
+    private val valueVar: String,
+    private val mapVar: String
+) : AbstractRenderingContextModel() {
 
     init {
         if (keyVar == valueVar) {
@@ -87,7 +94,11 @@ class ResolverIterationContextModel(private val keyVar: String, private val valu
         val resolver = buildResolver(ctx, deps)
         return RenderableContext(resolver, iterable.keySet().flatMap { key ->
             when {
-                keyVar == "_" -> SingletonResolver(valueVar, iterable.ensureReference(ResolutionType.ANY, key), resolver)
+                keyVar == "_" -> SingletonResolver(
+                    valueVar,
+                    iterable.ensureReference(ResolutionType.ANY, key),
+                    resolver
+                )
                 valueVar == "_" -> SingletonResolver(keyVar, StringData.Of(key), resolver)
                 else -> KeyValueResolver(key, iterable.ensureReference(ResolutionType.ANY, key), resolver)
             }.let {
@@ -96,19 +107,23 @@ class ResolverIterationContextModel(private val keyVar: String, private val valu
         })
     }
 
-    private inner class KeyValueResolver(private val key: String, private val value: Resolved, private val fallback: NameResolver)
-        : NameResolver {
+    private inner class KeyValueResolver(
+        private val key: String,
+        private val value: Resolved,
+        private val fallback: NameResolver
+    ) : NameResolver {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? = when (identifier) {
-            keyVar -> if (ResolutionType.STRING conformsTo type) {
-                StringData.Of(key) as T
-            } else {
-                throwTypeMismatch(type, ResolutionType.STRING)
+        override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? =
+            when (identifier) {
+                keyVar -> if (ResolutionType.STRING conformsTo type) {
+                    StringData.Of(key) as T
+                } else {
+                    throwTypeMismatch(type, ResolutionType.STRING)
+                }
+                valueVar -> type.ensure(identifier, value)
+                else -> fallback.resolveReference(type, identifier)
             }
-            valueVar -> type.ensure(identifier, value)
-            else -> fallback.resolveReference(type, identifier)
-        }
 
         override fun keySet(): List<String> = fallback.keySet() + key
 
@@ -116,7 +131,8 @@ class ResolverIterationContextModel(private val keyVar: String, private val valu
 
 }
 
-class ImportContextModel(private val importVar: String, private val importKey: String) : AbstractRenderingContextModel() {
+class ImportContextModel(private val importVar: String, private val importKey: String) :
+    AbstractRenderingContextModel() {
 
     override fun bake(ctx: NameResolver, deps: AssetResolver): RenderingContext {
         val resolver = buildResolver(ctx, deps)
@@ -126,10 +142,11 @@ class ImportContextModel(private val importVar: String, private val importKey: S
 
 }
 
-class SingletonResolver(private val key: String, private val value: Resolved, private val fallback: NameResolver) : NameResolver {
+class SingletonResolver(private val key: String, private val value: Resolved, private val fallback: NameResolver) :
+    NameResolver {
 
     override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? =
-            if (identifier == key) type.ensure(identifier, value) else fallback.resolveReference(type, identifier)
+        if (identifier == key) type.ensure(identifier, value) else fallback.resolveReference(type, identifier)
 
     override fun keySet(): List<String> = fallback.keySet() + key
 
@@ -138,7 +155,7 @@ class SingletonResolver(private val key: String, private val value: Resolved, pr
 class AppendingNameResolver(private val bindings: Map<String, Any>, private val fallback: NameResolver) : NameResolver {
 
     override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? =
-            bindings[identifier]?.let { type.ensure(identifier, it) } ?: fallback.resolveReference(type, identifier)
+        bindings[identifier]?.let { type.ensure(identifier, it) } ?: fallback.resolveReference(type, identifier)
 
     override fun keySet(): List<String> = fallback.keySet() + bindings.keys
 

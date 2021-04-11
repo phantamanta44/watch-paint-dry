@@ -12,8 +12,8 @@ open class RenderingException : Exception {
 
 class UnrenderableAssetException(key: String, val path: Path) : RenderingException("No adapter for asset: $key ($path)")
 
-class DuplicateAssetException(key: String, oldPath: Path, newPath: Path)
-    : RenderingException("Duplicate asset: $key ($oldPath -> $newPath)")
+class DuplicateAssetException(key: String, oldPath: Path, newPath: Path) :
+    RenderingException("Duplicate asset: $key ($oldPath -> $newPath)")
 
 class UnresolvableAssetException(key: String) : RenderingException("Could not resolve asset: $key")
 
@@ -23,7 +23,12 @@ class AssetParsingException : RenderingException {
     val line: Int
     val pos: Int
 
-    constructor(key: String, line: Int, pos: Int, cause: Throwable) : super("Parsing failed at $line/$pos for asset: $key", cause) {
+    constructor(
+        key: String,
+        line: Int,
+        pos: Int,
+        cause: Throwable
+    ) : super("Parsing failed at $line/$pos for asset: $key", cause) {
         this.key = key
         this.line = line
         this.pos = pos
@@ -37,10 +42,11 @@ class AssetParsingException : RenderingException {
 
 }
 
-class UnresolvableReferenceException(identifier: String) : RenderingException("Could not resolve reference: $identifier")
+class UnresolvableReferenceException(identifier: String) :
+    RenderingException("Could not resolve reference: $identifier")
 
-class ReferenceTypeException(identifier: String, expectedType: Class<*>, actualType: Class<*>)
-    : RenderingException("Expected ${expectedType.name} but found ${actualType.name}: $identifier")
+class ReferenceTypeException(identifier: String, expectedType: Class<*>, actualType: Class<*>) :
+    RenderingException("Expected ${expectedType.name} but found ${actualType.name}: $identifier")
 
 class MalformationException(msg: String) : RenderingException(msg)
 

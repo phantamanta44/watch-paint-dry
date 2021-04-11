@@ -65,7 +65,7 @@ class JsonAdapter : AbstractFileTypeAdapter("application/json", ".json") {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T =
-                wrap(type, dto.get(identifier) ?: throw UnresolvableAssetException(identifier)) as T
+            wrap(type, dto.get(identifier) ?: throw UnresolvableAssetException(identifier)) as T
 
         override fun keySet(): List<String> = dto.keySet().toList()
 
@@ -83,7 +83,7 @@ class JsonAdapter : AbstractFileTypeAdapter("application/json", ".json") {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : Resolved> ensureIndex(type: ResolutionType<T>, index: Int): T =
-                wrap(type, dto.get(index)) as T
+            wrap(type, dto.get(index)) as T
 
         override val length: Int
             get() = dto.size()

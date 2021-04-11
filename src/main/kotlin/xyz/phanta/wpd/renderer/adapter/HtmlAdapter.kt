@@ -16,10 +16,13 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
     companion object {
 
         private val GRAMMAR: Grammar = loadGrammar("/adapter/html.wird")
-        private val PARSER: Parser = GRAMMAR.newParser("html", ParserConfig.Builder()
+        private val PARSER: Parser = GRAMMAR.newParser(
+            "html",
+            ParserConfig.Builder()
                 .withFinalizers("html", 0, Finalizers.flatten(0))
                 .withFinalizers("html_entity", 0, Finalizers.omit(0, 3))
-                .build())
+                .build()
+        )
 
     }
 
@@ -59,8 +62,8 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                                     ConditionalContextModel(condition)
                                 }
                                 (contextStack.context as? ConditionalContextModel
-                                        ?: throw MalformationException("Conditional fallthrough block without conditional!"))
-                                        .fallthrough = newContext
+                                    ?: throw MalformationException("Conditional fallthrough block without conditional!"))
+                                    .fallthrough = newContext
                                 contextStack = contextStack.pop().push(newContext)
                             }
                             "[" -> {
@@ -82,9 +85,9 @@ class HtmlAdapter : AbstractFileTypeAdapter("text/html", ".html", ".htm", ".xhtm
                                     throw MalformationException("Malformed resolver data-import expression!")
                                 }
                                 val iterModel = ResolverIterationContextModel(
-                                        iterVars[0].trim(),
-                                        iterVars[1].trim(),
-                                        operands[1].trim()
+                                    iterVars[0].trim(),
+                                    iterVars[1].trim(),
+                                    operands[1].trim()
                                 )
                                 contextStack.children.add(iterModel)
                                 contextStack = contextStack.push(iterModel)

@@ -37,9 +37,12 @@ fun main(rawArgs: Array<String>) {
             thread(name = "WPD Observer Thread") {
                 fs.newWatchService().use { ws ->
                     renderer.inputDirectories.forEach {
-                        it.register(ws, StandardWatchEventKinds.ENTRY_CREATE,
-                                StandardWatchEventKinds.ENTRY_DELETE,
-                                StandardWatchEventKinds.ENTRY_MODIFY)
+                        it.register(
+                            ws,
+                            StandardWatchEventKinds.ENTRY_CREATE,
+                            StandardWatchEventKinds.ENTRY_DELETE,
+                            StandardWatchEventKinds.ENTRY_MODIFY
+                        )
                     }
                     while (!Thread.interrupted()) {
                         try {
@@ -95,7 +98,11 @@ class WpdArgs(parser: ArgParser) {
 
     val httpPort: Int? by parser.storing("--serve", "-s", help = "HTTP server port.") { toInt() }.default { null }
 
-    val observe: Boolean by parser.flagging("--continuous", "-c", help = "Observe source files and update rendered files.").default { false }
+    val observe: Boolean by parser.flagging(
+        "--continuous",
+        "-c",
+        help = "Observe source files and update rendered files."
+    ).default { false }
 
     val inputDir: String by parser.storing("--in", "-i", help = "Input directory.").default { "." }
 

@@ -29,8 +29,8 @@ class Renderer(private val args: WpdArgs, pathIn: Path, private val pathOut: Pat
         if (Files.exists(pathOut)) {
             println("\n> Cleaning up output dir...")
             Files.walk(pathOut)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(Files::delete)
+                .sorted(Comparator.reverseOrder())
+                .forEach(Files::delete)
         }
 
         println("\n> Searching for assets...")
@@ -126,7 +126,7 @@ private class AssetDependencyTree(private val adapters: AssetAdapterResolver) : 
 private class DefaultAdapters : AssetAdapterResolver {
 
     private val adapters: List<AssetAdapter> = listOf(
-            HtmlAdapter(), JsonAdapter()
+        HtmlAdapter(), JsonAdapter()
     )
 
     override fun adapterFor(key: String, path: Path): AssetAdapter {

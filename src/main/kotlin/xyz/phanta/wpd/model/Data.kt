@@ -14,21 +14,21 @@ interface Indexable : NameResolver, Resolved {
     fun <T : Resolved> resolveIndex(type: ResolutionType<T>, index: Int): T?
 
     fun <T : Resolved> ensureIndex(type: ResolutionType<T>, index: Int): T = resolveIndex(type, index)
-            ?: throw UnresolvableReferenceException("[$index]")
+        ?: throw UnresolvableReferenceException("[$index]")
 
     val length: Int
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? =
-            if (identifier == "length") {
-                if (type conformsTo ResolutionType.INTEGRAL) {
-                    IntegralData.Of(length) as T
-                } else {
-                    throwTypeMismatch(type, ResolutionType.INTEGRAL)
-                }
+        if (identifier == "length") {
+            if (type conformsTo ResolutionType.INTEGRAL) {
+                IntegralData.Of(length) as T
             } else {
-                null
+                throwTypeMismatch(type, ResolutionType.INTEGRAL)
             }
+        } else {
+            null
+        }
 
     override fun keySet(): List<String> = KEY_SET
 
@@ -220,11 +220,11 @@ interface StringData : Indexable, Resolved {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Resolved> resolveIndex(type: ResolutionType<T>, index: Int): T? =
-            if (ResolutionType.STRING conformsTo type) {
-                Of(stringValue[index].toString()) as T
-            } else {
-                throwTypeMismatch(type, ResolutionType.STRING)
-            }
+        if (ResolutionType.STRING conformsTo type) {
+            Of(stringValue[index].toString()) as T
+        } else {
+            throwTypeMismatch(type, ResolutionType.STRING)
+        }
 
     override val length: Int
         get() = stringValue.length

@@ -12,10 +12,11 @@ interface NameResolver : Resolved {
         null
     }
 
-    fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T = resolveReference(type, identifier)
-            ?: throw UnresolvableReferenceException(identifier)
+    fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T =
+        resolveReference(type, identifier) ?: throw UnresolvableReferenceException(identifier)
 
-    fun <T : Resolved> ensureExpression(type: ResolutionType<T>, expression: String): T = parseExpression(type, expression)
+    fun <T : Resolved> ensureExpression(type: ResolutionType<T>, expression: String): T =
+        parseExpression(type, expression)
 
     fun keySet(): List<String>
 
@@ -38,10 +39,10 @@ interface RenderingContext : Resolved, NameResolver {
     override fun isEq(other: Resolved): Boolean = this == other
 
     override fun <T : Resolved> resolveReference(type: ResolutionType<T>, identifier: String): T? =
-            nameResolver.resolveReference(type, identifier)
+        nameResolver.resolveReference(type, identifier)
 
     override fun <T : Resolved> ensureReference(type: ResolutionType<T>, identifier: String): T =
-            nameResolver.ensureReference(type, identifier)
+        nameResolver.ensureReference(type, identifier)
 
     override fun keySet(): List<String> = nameResolver.keySet()
 
@@ -58,7 +59,11 @@ interface Resolved : Renderable {
 }
 
 open class ResolutionType<T : Resolved>
-private constructor(private val typeName: String, private val type: Class<T>, private val parent: ResolutionType<*>? = ANY) {
+private constructor(
+    private val typeName: String,
+    private val type: Class<T>,
+    private val parent: ResolutionType<*>? = ANY
+) {
 
     companion object {
 

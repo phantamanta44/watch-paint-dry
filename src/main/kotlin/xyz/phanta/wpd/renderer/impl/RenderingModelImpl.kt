@@ -17,14 +17,14 @@ class RenderableLiteral(private val value: String) : Renderable {
 class ExpressionModel(private val expression: String) : RenderingModel<Renderable> {
 
     override fun bake(ctx: NameResolver, deps: AssetResolver): Renderable =
-            ctx.resolveExpression(ResolutionType.ANY, expression)?.bake(ctx, deps) ?: RenderableNil
+        ctx.resolveExpression(ResolutionType.ANY, expression)?.bake(ctx, deps) ?: RenderableNil
 
 }
 
 class StrictExpressionModel(private val expression: String) : RenderingModel<Renderable> {
 
     override fun bake(ctx: NameResolver, deps: AssetResolver): Renderable =
-            ctx.ensureExpression(ResolutionType.ANY, expression).bake(ctx, deps)
+        ctx.ensureExpression(ResolutionType.ANY, expression).bake(ctx, deps)
 
 }
 
