@@ -93,7 +93,7 @@ private class AssetDependencyTree(private val adapters: AssetAdapterResolver) : 
     }
 
     fun resolvePages(): List<Pair<Path, Asset>> = pageMapping.map { entry ->
-        entry.value to cache.computeIfAbsent(entry.key) { parsePath(it, entry.value) }
+        entry.value to (cache[entry.key] ?: parsePath(entry.key, entry.value))
     }
 
     fun printUnresolved() {
@@ -104,7 +104,7 @@ private class AssetDependencyTree(private val adapters: AssetAdapterResolver) : 
         }
     }
 
-    override fun resolveAsset(key: String): Asset = cache.computeIfAbsent(key, ::parse)
+    override fun resolveAsset(key: String): Asset = cache[key] ?: parse(key)
 
     private fun parse(key: String): Asset = parsePath(key, keyMapping[key] ?: throw UnresolvableAssetException(key))
 
