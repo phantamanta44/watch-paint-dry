@@ -4,6 +4,7 @@ import com.sun.net.httpserver.spi.HttpServerProvider
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import xyz.phanta.wpd.model.RenderingException
 import xyz.phanta.wpd.renderer.Renderer
 import java.io.IOException
 import java.net.InetSocketAddress
@@ -48,13 +49,18 @@ fun main(rawArgs: Array<String>) {
                     }
                     while (!Thread.interrupted()) {
                         try {
-                            val key = ws.take()
-                            println("$ Changed: ${key.pollEvents().joinToString { it.context().toString() }}")
-                            key.reset()
-                        } catch (e: InterruptedException) {
-                            break
+                            try {
+                                val key = ws.take()
+                                println("$ Changed: ${key.pollEvents().joinToString { it.context().toString() }}")
+                                key.reset()
+                            } catch (e: InterruptedException) {
+                                break
+                            }
+                            renderer.render()
+                        } catch (e: Exception) {
+                            println("$ Encountered exception while re-rendering:")
+                            e.printStackTrace(System.out)
                         }
-                        renderer.render()
                     }
                 }
             }
