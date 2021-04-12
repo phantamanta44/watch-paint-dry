@@ -36,13 +36,15 @@ fun main(rawArgs: Array<String>) {
             println("\n# Starting observer...")
             thread(name = "WPD Observer Thread") {
                 fs.newWatchService().use { ws ->
-                    renderer.inputDirectories.forEach {
-                        it.register(
-                            ws,
-                            StandardWatchEventKinds.ENTRY_CREATE,
-                            StandardWatchEventKinds.ENTRY_DELETE,
-                            StandardWatchEventKinds.ENTRY_MODIFY
-                        )
+                    renderer.inputDirectories.forEach { inputDir ->
+                        Files.walk(inputDir).filter { Files.isDirectory(it) }.forEach {
+                            it.register(
+                                ws,
+                                StandardWatchEventKinds.ENTRY_CREATE,
+                                StandardWatchEventKinds.ENTRY_DELETE,
+                                StandardWatchEventKinds.ENTRY_MODIFY
+                            )
+                        }
                     }
                     while (!Thread.interrupted()) {
                         try {
