@@ -57,10 +57,12 @@ class Renderer(private val args: WpdArgs, pathIn: Path, private val pathOut: Pat
             doc.outputSettings().apply {
                 charset(StandardCharsets.US_ASCII)
                 escapeMode(Entities.EscapeMode.extended)
-                if (args.ugly) {
-                    prettyPrint(false)
-                } else {
+                if (args.reformat) {
+                    prettyPrint(true)
                     indentAmount(args.indent)
+                } else {
+                    prettyPrint(false)
+                    indentAmount(0)
                 }
             }
             Files.write(path, doc.outerHtml().toByteArray())

@@ -116,8 +116,9 @@ class WpdArgs(parser: ArgParser) {
 
     val outputDir: String by parser.storing("--out", "-o", help = "Output directory.").default { "out" }
 
-    val ugly: Boolean by parser.flagging("--ugly", "-u", help = "Don't prettify output.")
+    val reformat: Boolean by parser.flagging("--reformat", "-R", help = "Reformat output to prettify.")
 
-    val indent: Int by parser.storing("--indent", "-n", help = "Output indent size.") { toInt() }.default { 4 }
+    val indent: Int by parser.storing("--indent", "-n", help = "Indentation size for reformatting.") { toInt() }
+        .default { 4 }
 
 }
