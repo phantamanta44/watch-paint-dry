@@ -1,11 +1,13 @@
 package xyz.phanta.wpd.renderer
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Entities
 import org.jsoup.parser.Parser
 import xyz.phanta.wpd.WpdArgs
 import xyz.phanta.wpd.model.*
 import xyz.phanta.wpd.renderer.adapter.HtmlAdapter
 import xyz.phanta.wpd.renderer.adapter.JsonAdapter
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -52,10 +54,14 @@ class Renderer(private val args: WpdArgs, pathIn: Path, private val pathOut: Pat
             println("Writing '$path'")
             Files.createDirectories(path.parent)
             val doc = Jsoup.parse(it.second, "", Parser.htmlParser())
-            if (args.ugly) {
-                doc.outputSettings().prettyPrint(false)
-            } else {
-                doc.outputSettings().indentAmount(args.indent)
+            doc.outputSettings().apply {
+                charset(StandardCharsets.US_ASCII)
+                escapeMode(Entities.EscapeMode.extended)
+                if (args.ugly) {
+                    prettyPrint(false)
+                } else {
+                    indentAmount(args.indent)
+                }
             }
             Files.write(path, doc.outerHtml().toByteArray())
         }
